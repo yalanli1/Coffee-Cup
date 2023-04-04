@@ -11,28 +11,28 @@ class CoffeeCup:
         self.function = function  # e.g. pour-over, retain-heat, double-walled, vintage, cup+plate, personalized
 
     def get_type(self):
-        return self._type
+        return self.type
 
     def get_size(self):
-        return self._size
+        return self.size
 
     def get_material(self):
-        return self._material
+        return self.material
 
     def get_function(self):
-        return self._function
+        return self.function
 
     def set_type(self, type):
-        self._type = type
+        self.type = type
 
     def set_size(self, size):
-        self._size = size
+        self.size = size
 
     def set_material(self, material):
-        self._material = material
+        self.material = material
 
     def set_function(self, function):
-        self._function = function
+        self.function = function
     
  
 # Examples of coffee cups
@@ -128,19 +128,48 @@ def find_coffee_cups():
 
 
 # add a new coffee cup
-@app.route('/add_cup', methods=['POST'])
+@app.route('/add_cup', methods=['GET','POST'])
 def add_coffee_cup():
     cup = CoffeeCup(request.args.get("type"), request.args.get("size"), request.args.get("material"), request.args.get("function"))
     coffee_cups.append(cup)
     return jsonify({
         'message': 'Successfully created a new coffee cup! Use /all_cups to check the existing cups',
         'data': {
-            'type': cup.type,
-            'size': cup.size,
-            'material': cup.material,
-            'function': cup.function
+            'type': cup.get_type(),
+            'size': cup.get_size(),
+            'material': cup.get_material(),
+            'function': cup.get_function()
         }
     })
+
+
+# Improvement
+# update coffee cup info
+@app.route('/update_cup', methods=['GET','POST'])
+def update_coffee_cup():
+    type = request.args.get("type")
+    size = request.args.get("size")
+    material = request.args.get("material")
+    function = request.args.get("function")
+    for i, c in enumerate(coffee_cups): 
+        if c.get_type() == type:
+            c.set_size(size)
+            c.set_function(function)
+            c.set_material(material)
+            return jsonify({
+                'message': 'Successfully updated the coffee cup! Use /find_cups to check the update',
+                'data': {
+                    'type': c.get_type(),
+                    'size': c.get_size(),
+                    'material': c.get_material(),
+                    'function': c.get_function()
+                }
+            })
+    return jsonify("Cup not found!")
+
+
+# Improvement
+# remove a coffee cup
 
 
 if __name__ == '__main__':
