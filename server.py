@@ -1,8 +1,6 @@
 from flask import Flask, jsonify, request
 import json
 
-app = Flask(__name__)
-
 # describe a coffee cup as an object
 # refer to https://www.homegrounds.co/different-coffee-cup-types/
 class CoffeeCup:
@@ -13,6 +11,30 @@ class CoffeeCup:
         self.function = function  # e.g. pour-over, retain-heat, double-walled, vintage, cup+plate, personalized
 
     # use getattr() instead of getters
+
+    def get_type(self):
+        return self._type
+
+    def get_size(self):
+        return self._size
+
+    def get_material(self):
+        return self._material
+
+    def get_function(self):
+        return self._function
+
+    def set_type(self, type):
+        self._type = type
+
+    def set_size(self, size):
+        self._size = size
+
+    def set_material(self, material):
+        self._material = material
+
+    def set_function(self, function):
+        self._function = function
     
  
 # Examples of coffee cups
@@ -24,9 +46,9 @@ coffee_cups = [
     CoffeeCup("tumbler", 20, "steel", "retain-heat")
 ]
 
-from flask import Flask
 
-app = Flask(__name__)
+app = Flask(__name__) # create a new instance of Flask 
+
 
 # prints all coffee cups
 @app.route('/all_cups', methods=['GET'])
@@ -41,19 +63,71 @@ def get_all_coffee_cups():
         }
     return ret_cups
 
+
+# # find a coffee cup by a property
+# @app.route('/find_cups/<key>=<value>', methods=['GET'])
+# def find_coffee_cups(key, value):
+#     ret_cups = {}
+#     for i, c in enumerate(coffee_cups):
+#         if getattr(c, key) == value:
+#             ret_cups[i] = {
+#                 'type': c.type,
+#                 'size': c.size,
+#                 'material': c.material,
+#                 'function': c.function
+#             }
+#     return ret_cups
+
+
+# Improvement
 # find a coffee cup by a property
-@app.route('/find_cups/<key>=<value>', methods=['GET'])
-def find_coffee_cups(key, value):
+@app.route('/find_cups', methods=['GET'])
+def find_coffee_cups():
+    type = request.args.get("type")
+    size = request.args.get("size")
+    material = request.args.get("material")
+    function = request.args.get("function")
     ret_cups = {}
-    for i, c in enumerate(coffee_cups):
-        if getattr(c, key) == value:
-            ret_cups[i] = {
-                'type': c.type,
-                'size': c.size,
-                'material': c.material,
-                'function': c.function
-            }
+    print(type,size,material,function)
+    if type:
+        for i, c in enumerate(coffee_cups): 
+            if getattr(c, "type") == type:
+                # use [i] to aovid deplicates, overwirte that item if found a duplicate
+                ret_cups[i] = {
+                    'type': c.type,
+                    'size': c.size,
+                    'material': c.material,
+                    'function': c.function
+                }
+    if size:
+        for i, c in enumerate(coffee_cups): 
+            if getattr(c, "size") == size:
+                ret_cups[i] = {
+                    'type': c.type,
+                    'size': c.size,
+                    'material': c.material,
+                    'function': c.function
+                }
+    if material:
+        for i, c in enumerate(coffee_cups): 
+            if getattr(c, "material") == material:
+                ret_cups[i] = {
+                    'type': c.type,
+                    'size': c.size,
+                    'material': c.material,
+                    'function': c.function
+                }
+    if function:
+        for i, c in enumerate(coffee_cups): 
+            if getattr(c, "function") == function:
+                ret_cups[i] = {
+                    'type': c.type,
+                    'size': c.size,
+                    'material': c.material,
+                    'function': c.function
+                }
     return ret_cups
+
 
 # add a new coffee cup
 @app.route('/add_cup', methods=['POST'])
