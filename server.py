@@ -10,8 +10,6 @@ class CoffeeCup:
         self.material = material  # e.g. ceramic, glass, steel, paper, stoneware
         self.function = function  # e.g. pour-over, retain-heat, double-walled, vintage, cup+plate, personalized
 
-    # use getattr() instead of getters
-
     def get_type(self):
         return self._type
 
